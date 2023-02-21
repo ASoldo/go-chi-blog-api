@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -42,7 +43,9 @@ func main() {
 	r.Post("/posts/{id}/comment", commentOnPost)
 
 	fmt.Println("Starting server on :8080")
-	http.ListenAndServe(":8080", r)
+	if err := http.ListenAndServe(":8080", r); err != nil {
+		log.Fatalf("Failed to listend and serve: %v", err)
+	}
 }
 
 func getAllPosts(w http.ResponseWriter, r *http.Request) {
@@ -50,7 +53,9 @@ func getAllPosts(w http.ResponseWriter, r *http.Request) {
 	for _, post := range posts {
 		postsList = append(postsList, post)
 	}
-	json.NewEncoder(w).Encode(postsList)
+	if err := json.NewEncoder(w).Encode(postsList); err != nil {
+		log.Fatalf("Unable to parse the JSON. %v", err)
+	}
 }
 
 func getPostByID(w http.ResponseWriter, r *http.Request) {
@@ -64,7 +69,9 @@ func getPostByID(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
-	json.NewEncoder(w).Encode(post)
+	if err := json.NewEncoder(w).Encode(post); err != nil {
+		log.Fatalf("Unable to parse JSON. %v", err)
+	}
 }
 
 func createPost(w http.ResponseWriter, r *http.Request) {
@@ -76,7 +83,9 @@ func createPost(w http.ResponseWriter, r *http.Request) {
 	post.ID = postID
 	posts[post.ID] = post
 	postID++
-	json.NewEncoder(w).Encode(post)
+	if err := json.NewEncoder(w).Encode(post); err != nil {
+		log.Fatalf("Unable to parse JSON. %v", err)
+	}
 }
 
 func updatePostByID(w http.ResponseWriter, r *http.Request) {
@@ -98,7 +107,9 @@ func updatePostByID(w http.ResponseWriter, r *http.Request) {
 	post.Title = updatedPost.Title
 	post.Content = updatedPost.Content
 	posts[id] = post
-	json.NewEncoder(w).Encode(post)
+	if err := json.NewEncoder(w).Encode(post); err != nil {
+		log.Fatalf("Unable to parse JSON. %v", err)
+	}
 }
 
 func deletePostByID(w http.ResponseWriter, r *http.Request) {
@@ -128,7 +139,9 @@ func likePostByID(w http.ResponseWriter, r *http.Request) {
 	}
 	post.Likes++
 	posts[id] = post
-	json.NewEncoder(w).Encode(post)
+	if err := json.NewEncoder(w).Encode(post); err != nil {
+		log.Fatalf("Unable to parse JSON. %v", err)
+	}
 }
 
 func commentOnPost(w http.ResponseWriter, r *http.Request) {
@@ -151,5 +164,7 @@ func commentOnPost(w http.ResponseWriter, r *http.Request) {
 	commentID++
 	post.Comments = append(post.Comments, comment)
 	posts[id] = post
-	json.NewEncoder(w).Encode(post)
+	if err := json.NewEncoder(w).Encode(post); err != nil {
+		log.Fatalf("Unable to parse JSON. %v", err)
+	}
 }
