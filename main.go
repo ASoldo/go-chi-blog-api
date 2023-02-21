@@ -103,7 +103,6 @@ func updatePostByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var updatedPost Post
-	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewDecoder(r.Body).Decode(&updatedPost); err != nil {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
@@ -111,6 +110,7 @@ func updatePostByID(w http.ResponseWriter, r *http.Request) {
 	post.Title = updatedPost.Title
 	post.Content = updatedPost.Content
 	posts[id] = post
+	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(post); err != nil {
 		log.Fatalf("Unable to parse JSON. %v", err)
 	}
@@ -122,7 +122,6 @@ func deletePostByID(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
 	if _, ok := posts[id]; !ok {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
