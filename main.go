@@ -53,6 +53,7 @@ func getAllPosts(w http.ResponseWriter, r *http.Request) {
 	for _, post := range posts {
 		postsList = append(postsList, post)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(postsList); err != nil {
 		log.Fatalf("Unable to parse the JSON. %v", err)
 	}
@@ -69,6 +70,7 @@ func getPostByID(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(post); err != nil {
 		log.Fatalf("Unable to parse JSON. %v", err)
 	}
@@ -83,6 +85,7 @@ func createPost(w http.ResponseWriter, r *http.Request) {
 	post.ID = postID
 	posts[post.ID] = post
 	postID++
+	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(post); err != nil {
 		log.Fatalf("Unable to parse JSON. %v", err)
 	}
@@ -100,6 +103,7 @@ func updatePostByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var updatedPost Post
+	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewDecoder(r.Body).Decode(&updatedPost); err != nil {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
@@ -118,6 +122,7 @@ func deletePostByID(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	if _, ok := posts[id]; !ok {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
@@ -139,6 +144,7 @@ func likePostByID(w http.ResponseWriter, r *http.Request) {
 	}
 	post.Likes++
 	posts[id] = post
+	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(post); err != nil {
 		log.Fatalf("Unable to parse JSON. %v", err)
 	}
@@ -164,6 +170,7 @@ func commentOnPost(w http.ResponseWriter, r *http.Request) {
 	commentID++
 	post.Comments = append(post.Comments, comment)
 	posts[id] = post
+	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(post); err != nil {
 		log.Fatalf("Unable to parse JSON. %v", err)
 	}
